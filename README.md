@@ -1,10 +1,4 @@
-<iframe
-  src="https://certificates.emeritus.org/embed/6625fe99-64b5-4346-abe3-519469bbcd0d"
-  width="800"
-  height="600"
-  frameborder="0"
-  allowfullscreen>
-</iframe>
+https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/84155588
 
 # FullStackDataScienceApplication  ROAD MAP 
 Take a Dataset-EDA-process data - Build a Deep Neural Network (ANN) (CNN) - Train the Model - Build Full Stack Web App : Back end to deploy The Model - Sever - Frontend for Using The Model-
