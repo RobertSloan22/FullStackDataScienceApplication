@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digit Recognition</title>
+</head>
+<body>
+    <h2>Digit Recognition with Camera</h2>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture</button>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+    
+    <!-- Section to display the prediction history -->
+    <div id="prediction-history">
+        <h3>Prediction History</h3>
+        <ul id="history-list"></ul>
+
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('capture');
+        const historyList = document.getElementById('history-list'); // Get the history list element
+
+        // Access the user's camera
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+            });
+        }
+
+        captureButton.addEventListener('click', function() {
+            context.drawImage(video, 0, 0, 640, 480); // Draw the video frame to the canvas.
+            canvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('image', blob);
+                fetch('/predict', { // Send the image to the Flask backend
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Predicted Digit: ' + data.prediction); // Alert the prediction result
+                    updateHistory(data.history); // Update the history list with the latest predictions
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 'image/jpeg');
+        });
+
+        function updateHistory(history) {
+            historyList.innerHTML = ''; // Clear the current history list
+            history.forEach(function(prediction) {
+                const listItem = document.createElement('li'); // Create a new list item for each prediction
+                listItem.textContent = `Predicted Digit: ${prediction}`;
+                historyList.appendChild(listItem); // Add the list item to the history list
+            });
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-hoLeV+3dUfVch6JzJp5yn8zOj/1YX6fvcw8eA+eG3O5g6z7zv6V5C8gwU076h" crossorigin="anonymous"></script>
+</html>
